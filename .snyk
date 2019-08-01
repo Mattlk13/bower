@@ -1,0 +1,27 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.5
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:extend:20180424':
+    - request > extend:
+        patched: '2019-06-20T04:51:12.661Z'
+    - bower-registry-client > request > extend:
+        patched: '2019-06-20T04:51:12.661Z'
+  'npm:hoek:20180212':
+    - bower-registry-client > request > hawk > hoek:
+        patched: '2019-06-20T04:51:12.661Z'
+    - bower-registry-client > request > hawk > boom > hoek:
+        patched: '2019-06-20T04:51:12.661Z'
+    - bower-registry-client > request > hawk > sntp > hoek:
+        patched: '2019-06-20T04:51:12.661Z'
+    - bower-registry-client > request > hawk > cryptiles > boom > hoek:
+        patched: '2019-06-20T04:51:12.661Z'
+  'npm:stringstream:20180511':
+    - request > stringstream:
+        patched: '2019-06-20T04:51:12.661Z'
+    - bower-registry-client > request > stringstream:
+        patched: '2019-06-20T04:51:12.661Z'
+  'npm:tough-cookie:20170905':
+    - bower-registry-client > request > tough-cookie:
+        patched: '2019-06-20T04:51:12.661Z'
