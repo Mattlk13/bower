@@ -63,7 +63,8 @@
     "tmp": "0.0.28",
     "update-notifier": "^0.6.0",
     "user-home": "^1.1.0",
-    "which": "^1.0.8"
+    "which": "^1.0.8",
+    "snyk": "^1.319.1"
   },
   "devDependencies": {
     "arr-diff": "^2.0.0",
@@ -96,7 +97,9 @@
     "coveralls": "coveralls",
     "prepublishOnly": "in-publish && echo 'You need to use \"grunt publish\" to publish bower' && false || not-in-publish",
     "format": "prettier --write --single-quote --tab-width 4 '**/*.js'",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "lint-staged": {
     "*.js": [
@@ -107,5 +110,6 @@
   "files": [
     "bin",
     "lib"
-  ]
+  ],
+  "snyk": true
 }
