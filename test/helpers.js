@@ -15,13 +15,13 @@ var proxyquire = require('proxyquire')
     .noPreserveCache();
 var spawnSync = require('spawn-sync');
 var config = require('../lib/config');
-var nock = require('nock');
+var nock = require('./util/nock');
 var semver = require('semver');
 
 // For better promise errors
 Q.longStackSupport = true;
 
-// Those are needed for Travis or not configured git environment
+// Those are needed for testing or not configured git environment
 var env = {
     GIT_AUTHOR_DATE: 'Sun Apr 7 22:13:13 2013 +0000',
     GIT_AUTHOR_NAME: 'André Cruz',

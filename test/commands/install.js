@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var path = require('path');
 var helpers = require('../helpers');
-var nock = require('nock');
+var nock = require('../util/nock');
 var rimraf = require('rimraf');
 var fs = require('../../lib/util/fs');
 var tar = require('tar-fs');
@@ -692,7 +692,7 @@ describe('bower install', function() {
         });
     });
 
-    it('recognizes proxy option in config', function(done) {
+    it('recognizes proxy option in config', function() {
         this.timeout(10000);
 
         tempDir.prepare({
@@ -708,8 +708,10 @@ describe('bower install', function() {
             cwd: tempDir.path
         });
 
-        nock('http://dummy.local')
-            .get('http://github.com/yahoo/pure/archive/v0.6.0.tar.gz')
+        nock('http://dummy.local/')
+            .get(function(uri) {
+                return true;
+            })
             .reply(500);
 
         return helpers
@@ -720,7 +722,6 @@ describe('bower install', function() {
             ])
             .fail(function(error) {
                 expect(error.message).to.equal('Status code of 500');
-                done();
             });
     });
 

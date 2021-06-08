@@ -1,6 +1,6 @@
 var expect = require('expect.js');
 var helpers = require('../helpers');
-var nock = require('nock');
+var nock = require('../util/nock');
 var path = require('path');
 var Q = require('q');
 
@@ -13,42 +13,30 @@ describe('download', function() {
         destination = tempDir.getPath('package.tar.gz');
 
     function downloadTest(opts) {
-        var deferred = Q.defer();
-
         tempDir.prepare();
 
         opts.response(nock('http://bower.io', opts.nockOpts));
 
-        download(
+        return download(
             opts.sourceUrl || 'http://bower.io/package.tar.gz',
             opts.destinationPath || destination,
             opts.downloadOpts
-        )
-            .then(
-                function(result) {
-                    if (opts.expect) {
-                        opts.expect(result);
-                        deferred.resolve();
-                    } else {
-                        deferred.reject(
-                            new Error(
-                                'Error expected. Got successful response.'
-                            )
-                        );
-                    }
-                },
-                function(error) {
-                    if (opts.expectError) {
-                        opts.expectError(error);
-                        deferred.resolve();
-                    } else {
-                        deferred.reject(error);
-                    }
+        ).then(
+            function(result) {
+                if (opts.expect) {
+                    opts.expect(result);
+                } else {
+                    throw new Error('Error expected. Got successful response.');
                 }
-            )
-            .done();
-
-        return deferred.promise;
+            },
+            function(error) {
+                if (opts.expectError) {
+                    opts.expectError(error);
+                } else {
+                    throw error;
+                }
+            }
+        );
     }
 
     it('download file to directory', function() {
@@ -112,8 +100,7 @@ describe('download', function() {
         return downloadTest({
             response: function(nock) {
                 // First connection + 5 retries
-                nock
-                    .get('/package.tar.gz')
+                nock.get('/package.tar.gz')
                     .times(6)
                     .delayConnection(1000)
                     .replyWithFile(200, source);
@@ -134,8 +121,7 @@ describe('download', function() {
         return downloadTest({
             response: function(nock) {
                 // First connection + 5 retries
-                nock
-                    .get('/package.tar.gz')
+                nock.get('/package.tar.gz')
                     .times(6)
                     .socketDelay(1000)
                     .replyWithFile(200, source);
@@ -156,8 +142,7 @@ describe('download', function() {
         return downloadTest({
             response: function(nock) {
                 // First connection + 5 retries
-                nock
-                    .get('/package.tar.gz')
+                nock.get('/package.tar.gz')
                     .times(5)
                     .delayConnection(1000)
                     .replyWithFile(200, source);
@@ -180,9 +165,9 @@ describe('download', function() {
         return downloadTest({
             response: function(nock) {
                 // First connection + 5 retries
-                nock
-                    .get('/package.tar.gz')
-                    .replyWithFile(200, source, { 'Content-Length': 5000 });
+                nock.get('/package.tar.gz').replyWithFile(200, source, {
+                    'Content-Length': 5000
+                });
             },
             expectError: function(e) {
                 expect(e.code).to.be('EINCOMPLETE');
@@ -208,11 +193,13 @@ describe('download', function() {
 
             return downloadTest({
                 response: function(nock) {
-                    nock
-                        .get('/' + sourceFilename)
-                        .replyWithFile(200, sourceFile, {
+                    nock.get('/' + sourceFilename).replyWithFile(
+                        200,
+                        sourceFile,
+                        {
                             'Content-Encoding': 'gzip'
-                        });
+                        }
+                    );
                 },
                 expect: function() {
                     expect(fs.readFileSync(destinationPath, 'ascii')).to.be(
